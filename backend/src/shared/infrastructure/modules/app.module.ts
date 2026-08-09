@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { IdentityModule } from 'src/context/identity/identity.module';
 import { NotificationsModule } from 'src/context/notifications/notifications.module';
+import { EnvironmentVariables } from '../config/environment-variables';
+import { typeOrmOptionsFactory } from '../config/typeorm-options.factory';
 import { validateEnvironmentVariables } from '../config/validate-environment-variables';
 import { DomainErrorFilter } from '../filters/domain-error.filter';
 
@@ -15,6 +18,11 @@ import { DomainErrorFilter } from '../filters/domain-error.filter';
     ConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnvironmentVariables,
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<EnvironmentVariables, true>) =>
+        typeOrmOptionsFactory(configService),
     }),
     // .forRoot() registers EventEmitter2 as a global provider: any context
     // module can inject it, or use `@OnEvent()`, without importing this module

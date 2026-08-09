@@ -30,4 +30,26 @@ export class EnvironmentVariables {
   @Transform(({ value }: { value: string }) => Number(value))
   @IsInt()
   EXPIRATION_TIMER?: number;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_HOST!: string;
+
+  @Transform(({ value }: { value: string }) => Number(value))
+  @IsInt()
+  @Min(1)
+  @Max(65535)
+  DATABASE_PORT!: number;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_NAME!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_USER!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DATABASE_PASSWORD!: string;
 }

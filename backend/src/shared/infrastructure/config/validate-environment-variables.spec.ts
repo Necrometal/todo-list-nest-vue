@@ -1,21 +1,32 @@
 import { validateEnvironmentVariables } from './validate-environment-variables';
 
 describe('validateEnvironmentVariables', () => {
+  const requiredDatabaseVars = {
+    DATABASE_HOST: 'localhost',
+    DATABASE_PORT: '3307',
+    DATABASE_NAME: 'todo-list',
+    DATABASE_USER: 'root',
+    DATABASE_PASSWORD: '0000',
+  };
+
   it('passes through a well-formed config with types coerced', () => {
     const result = validateEnvironmentVariables({
       JWT_SECRET: 'a-secret-that-is-long-enough',
       PORT: '4000',
       EXPIRATION_TIMER: '3600',
+      ...requiredDatabaseVars,
     });
 
     expect(result.JWT_SECRET).toBe('a-secret-that-is-long-enough');
     expect(result.PORT).toBe(4000);
     expect(result.EXPIRATION_TIMER).toBe(3600);
+    expect(result.DATABASE_PORT).toBe(3307);
   });
 
-  it('passes when only the required JWT_SECRET is set', () => {
+  it('passes when only the required vars are set', () => {
     const result = validateEnvironmentVariables({
       JWT_SECRET: 'a-secret-that-is-long-enough',
+      ...requiredDatabaseVars,
     });
 
     expect(result.PORT).toBeUndefined();
