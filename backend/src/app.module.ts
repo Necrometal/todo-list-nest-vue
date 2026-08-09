@@ -12,7 +12,11 @@ import { TodoHistoryModule } from './todo-history/todo-history.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, validate }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validate,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
