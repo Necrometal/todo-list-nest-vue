@@ -8,7 +8,10 @@ import { Repository } from 'typeorm';
 import { Todo } from './entities/todo.entity';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { TodoHistoryService } from '../todo-history/todo-history.service';
+import {
+  TodoHistoryService,
+  StatsGroupBy,
+} from '../todo-history/todo-history.service';
 import { TodoAction } from '../todo-history/entities/todo-history.entity';
 
 @Injectable()
@@ -42,6 +45,7 @@ export class TodosService {
     const saved = await this.todosRepository.save(todo);
     await this.todoHistoryService.record(
       saved.id,
+      saved.title,
       ownerId,
       TodoAction.CREATED,
       {
@@ -75,6 +79,7 @@ export class TodosService {
     if (Object.keys(changes).length > 0) {
       await this.todoHistoryService.record(
         todo.id,
+        todo.title,
         ownerId,
         TodoAction.UPDATED,
         changes,
@@ -87,12 +92,25 @@ export class TodosService {
   async remove(id: string, ownerId: string): Promise<void> {
     const todo = await this.findOneForUser(id, ownerId);
     await this.todosRepository.remove(todo);
-    await this.todoHistoryService.record(id, ownerId, TodoAction.DELETED);
+    await this.todoHistoryService.record(
+      id,
+      todo.title,
+      ownerId,
+      TodoAction.DELETED,
+    );
   }
 
   getHistory(id: string, ownerId: string) {
     return this.findOneForUser(id, ownerId).then(() =>
       this.todoHistoryService.findByTodoId(id),
     );
+  }
+
+  getAllHistory(ownerId: string) {
+    return this.todoHistoryService.findAllForUser(ownerId);
+  }
+
+  getStats(ownerId: string, groupBy: StatsGroupBy) {
+    return this.todoHistoryService.getStats(ownerId, groupBy);
   }
 }

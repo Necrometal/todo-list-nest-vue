@@ -21,7 +21,19 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: () => import('../views/DashboardView.vue'),
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, breadcrumb: 'Dashboard', icon: 'pi-gauge' },
+    },
+    {
+      path: '/todos',
+      name: 'todos',
+      component: () => import('../views/TodosView.vue'),
+      meta: { requiresAuth: true, breadcrumb: 'Todos', icon: 'pi-list-check' },
+    },
+    {
+      path: '/history',
+      name: 'history',
+      component: () => import('../views/HistoryView.vue'),
+      meta: { requiresAuth: true, breadcrumb: 'History', icon: 'pi-clock' },
     },
   ],
 })

@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -16,6 +17,7 @@ import type { AuthenticatedUser } from '../auth/decorators/current-user.decorato
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { TodoStatsQueryDto } from './dto/todo-stats-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('todos')
@@ -30,6 +32,14 @@ export class TodosController {
   @Get()
   findAll(@CurrentUser() user: AuthenticatedUser) {
     return this.todosService.findAllForUser(user.id);
+  }
+
+  @Get('stats')
+  getStats(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: TodoStatsQueryDto,
+  ) {
+    return this.todosService.getStats(user.id, query.groupBy);
   }
 
   @Get(':id')

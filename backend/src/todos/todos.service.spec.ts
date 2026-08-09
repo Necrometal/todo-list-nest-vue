@@ -72,6 +72,7 @@ describe('TodosService', () => {
       });
       expect(todoHistoryService.record).toHaveBeenCalledWith(
         todo.id,
+        todo.title,
         ownerId,
         TodoAction.CREATED,
         { title: todo.title, description: todo.description },
@@ -95,6 +96,7 @@ describe('TodosService', () => {
       expect(result.completed).toBe(true);
       expect(todoHistoryService.record).toHaveBeenCalledWith(
         todo.id,
+        todo.title,
         ownerId,
         TodoAction.UPDATED,
         { completed: { from: false, to: true } },
@@ -123,6 +125,7 @@ describe('TodosService', () => {
       expect(todosRepository.remove).toHaveBeenCalledWith(todo);
       expect(todoHistoryService.record).toHaveBeenCalledWith(
         todo.id,
+        todo.title,
         ownerId,
         TodoAction.DELETED,
       );

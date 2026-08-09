@@ -18,6 +18,7 @@ export type TodoAction = 'created' | 'updated' | 'deleted'
 export interface TodoHistoryEntry {
   id: string
   todoId: string
+  todoTitle: string
   userId: string
   action: TodoAction
   changes: Record<string, { from: unknown; to: unknown }> | null
@@ -62,10 +63,10 @@ export const useTodosStore = defineStore('todos', () => {
     }
   }
 
-  async function createTodo(title: string) {
+  async function createTodo(payload: { title: string; description?: string }) {
     const todo = await apiFetch<Todo>('/todos', {
       method: 'POST',
-      body: { title },
+      body: payload,
       token: authToken(),
     })
     todos.value.unshift(todo)
@@ -96,10 +97,6 @@ export const useTodosStore = defineStore('todos', () => {
     todos.value = todos.value.filter((t) => t.id !== id)
   }
 
-  function fetchHistory(id: string) {
-    return apiFetch<TodoHistoryEntry[]>(`/todos/${id}/history`, { token: authToken() })
-  }
-
   return {
     todos,
     filter,
@@ -113,6 +110,5 @@ export const useTodosStore = defineStore('todos', () => {
     toggleCompleted,
     updateTodo,
     deleteTodo,
-    fetchHistory,
   }
 })

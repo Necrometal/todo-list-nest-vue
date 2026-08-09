@@ -3,6 +3,7 @@ import type { Todo } from '@/stores/todos'
 import TodoListItem from './TodoListItem.vue'
 
 defineProps<{ todos: Todo[]; loading: boolean; hasAny: boolean }>()
+const emit = defineEmits<{ edit: [todo: Todo] }>()
 </script>
 
 <template>
@@ -17,6 +18,11 @@ defineProps<{ todos: Todo[]; loading: boolean; hasAny: boolean }>()
   </div>
 
   <ul v-else class="flex flex-col">
-    <TodoListItem v-for="todo in todos" :key="todo.id" :todo="todo" />
+    <TodoListItem
+      v-for="todo in todos"
+      :key="todo.id"
+      :todo="todo"
+      @edit="emit('edit', $event)"
+    />
   </ul>
 </template>

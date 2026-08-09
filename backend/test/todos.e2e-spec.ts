@@ -17,23 +17,31 @@ describe('Todos (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
     );
     await app.init();
     await cleanDatabase(app);
 
-    const owner = await request(app.getHttpServer()).post('/auth/register').send({
-      email: 'todos-owner@example.com',
-      password: 'password123',
-      name: 'Owner',
-    });
+    const owner = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: 'todos-owner@example.com',
+        password: 'password123',
+        name: 'Owner',
+      });
     ownerToken = owner.body.accessToken;
 
-    const other = await request(app.getHttpServer()).post('/auth/register').send({
-      email: 'todos-other@example.com',
-      password: 'password123',
-      name: 'Other',
-    });
+    const other = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: 'todos-other@example.com',
+        password: 'password123',
+        name: 'Other',
+      });
     otherToken = other.body.accessToken;
   });
 
@@ -57,7 +65,10 @@ describe('Todos (e2e)', () => {
       .send({ title: 'Buy milk' })
       .expect(201);
 
-    expect(response.body).toMatchObject({ title: 'Buy milk', completed: false });
+    expect(response.body).toMatchObject({
+      title: 'Buy milk',
+      completed: false,
+    });
 
     const history = await request(app.getHttpServer())
       .get(`/todos/${response.body.id}/history`)
@@ -121,5 +132,22 @@ describe('Todos (e2e)', () => {
       .get(`/todos/${created.body.id}`)
       .set('Authorization', `Bearer ${ownerToken}`)
       .expect(404);
+  });
+
+  it('rejects stats requests without a token', async () => {
+    await request(app.getHttpServer()).get('/todos/stats').expect(401);
+  });
+
+  it('aggregates created/completed counts by day, scoped to the owner', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/todos/stats')
+      .query({ groupBy: 'day' })
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+
+    expect(response.body).toHaveLength(1);
+    const [bucket] = response.body;
+    expect(bucket).toMatchObject({ created: 4, completed: 1 });
+    expect(typeof bucket.period).toBe('string');
   });
 });

@@ -22,6 +22,9 @@ export class TodoHistory {
   todoId: string;
 
   @Column()
+  todoTitle: string;
+
+  @Column()
   userId: string;
 
   @Column({ type: 'enum', enum: TodoAction })
