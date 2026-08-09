@@ -17,14 +17,8 @@ We are going to create a agent's crew through a todo list project with nest and 
 1 - First we gonna create  the todo list project.
 
   * Backend: 
-  We gonna use the boilerplate ddd architecture in repository below
-  `https://github.com/Necrometal/boilerplate-nest-ddd-architecture`
-
-  So when i say create the backend:
-    - clone this repository
-    - remove the git folder so we can attach our project to new git repository
-    - change the project name to Todo List
-  We gonna use this as a base for our backend then build up the todo list step by step
+  We gonna use a fresh nest project then build up the todo list step by step,
+  We gonna use an architecture adpated to it, not overgearing it
 
   * Frontend:
   We gonna use a fresh vue project created from cli. Then we gonna build up the front step by step.
@@ -67,10 +61,10 @@ Then:
 
 Monorepo, two independent apps, no shared package manager workspace linkage:
 
-- `backend/` — NestJS 11 + TypeScript, DDD/Hexagonal architecture, pnpm
-- `frontend/` — Vue 3 + TypeScript + Vite, pnpm
+- `backend/` — NestJS 11 + TypeScript, pnpm. Freshly scaffolded (default `@nestjs/cli` starter, no domain features yet) — todo-list feature architecture gets built up step by step per the plan above.
+- `frontend/` — Vue 3 + TypeScript + Vite, pnpm. Default `create-vue` scaffold (Pinia + Vue Router wired) — no todo-domain structure yet either.
 
-Each has its own `package.json`, lockfile, and CLAUDE.md (`backend/CLAUDE.md` has backend-specific rules — read it when working there).
+Each has its own `package.json` and lockfile.
 
 ## Commands
 
@@ -82,13 +76,13 @@ pnpm build                  # nest build
 pnpm lint                   # eslint --fix on src/apps/libs/test
 pnpm format                 # prettier write src+test
 pnpm test                   # unit tests (jest, rootDir src, pattern *.spec.ts)
-pnpm test -- register-user  # run one unit test file by name match
+pnpm test -- <name>         # run test files matching <name>
 pnpm test:watch             # watch mode
 pnpm test:cov               # coverage report
 pnpm test:e2e               # e2e tests (test/*.e2e-spec.ts, separate config test/jest-e2e.json)
 ```
 
-Requires `.env` (copy from `.env.example`) — `JWT_SECRET` (min 8 chars) is required, app fails fast at boot if missing/invalid.
+No `.env` / MySQL wiring yet — add `class-validator`-backed env validation and a TypeORM datasource when persistence is introduced, per the architecture decided for the todo-list feature.
 
 ### Frontend (`cd frontend`)
 
@@ -100,35 +94,9 @@ pnpm type-check   # vue-tsc --build
 pnpm lint         # oxlint --fix then eslint --fix --cache
 ```
 
-## Backend architecture (DDD / Hexagonal)
+## Architecture
 
-```
-backend/src/
-├── shared/
-│   ├── domain/               base classes every context builds on (Entity, ValueObject, AggregateRoot, DomainEvent, Identifier, DomainError)
-│   ├── application/ports/    shared-kernel ports (DomainEventPublisher)
-│   └── infrastructure/       config validation, EventEmitter2-based event bus adapter, global DomainError HTTP filter, app.module.ts
-└── context/
-    ├── identity/              registration & authentication
-    │   ├── domain/            User aggregate, Email/PlainPassword/HashedPassword VOs, UserRepository port
-    │   ├── application/       use cases (RegisterUser, AuthenticateUser) + ports (PasswordHasher, TokenIssuer)
-    │   ├── infrastructure/    InMemoryUserRepository, bcrypt hasher, JWT issuer
-    │   └── interface/http/    IdentityController + DTOs
-    └── notifications/         reacts to identity's domain events (zero import of identity's code)
-        └── same four-layer shape as identity
-```
+Both apps are currently framework defaults with nothing todo-domain-specific built yet:
 
-Dependency rule (one-way, enforced by convention not tooling):
-- `domain/` depends on nothing else in the app.
-- `application/` depends on `domain/` only.
-- `infrastructure/` depends on `domain/` + `application/` to implement their ports (e.g. `InMemoryUserRepository implements UserRepository`) — the only layer allowed to import concrete libs like `bcrypt`.
-- `interface/` depends on `application/` only.
-- Cross-context communication happens only through domain events (`EventEmitter2`), never direct imports between `context/identity` and `context/notifications`.
-
-Every business-rule violation throws `DomainError`; a single global filter (`shared/infrastructure/filters/domain-error.filter.ts`) maps it to a `400`. Environment variables are validated at boot via `class-validator` (`shared/infrastructure/config/environment-variables.ts`) — add new env vars there, not via scattered `process.env.X` reads.
-
-To add a new bounded context, mirror the `identity`/`notifications` four-layer shape and wire it in `shared/infrastructure/modules/app.module.ts`. See `backend/docs/` for the full guided walkthrough (DDD concepts, architecture, adding a feature).
-
-## Frontend architecture
-
-Standard Vue 3 `create-vue` scaffold: `src/main.ts` bootstraps the app with Pinia (`src/stores/`) and Vue Router (`src/router/index.ts`); views live in `src/views/`, reusable components in `src/components/`. No todo-domain structure built yet — this gets built up step by step per the plan above.
+- **Backend**: default `@nestjs/cli new` output (`src/app.module.ts`, `app.controller.ts`, `app.service.ts`, `main.ts`). No modules, persistence, or auth wired in. Architecture (module layout, MySQL/TypeORM integration) is chosen per the goal/constraint/solutions flow described in the plan above before implementation starts.
+- **Frontend**: standard Vue 3 `create-vue` scaffold — `src/main.ts` bootstraps the app with Pinia (`src/stores/`) and Vue Router (`src/router/index.ts`); views live in `src/views/`, reusable components in `src/components/`. Tailwind + PrimeVue not yet installed.
