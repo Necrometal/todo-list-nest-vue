@@ -3,6 +3,10 @@ import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ApiError } from '@/lib/api'
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import Button from 'primevue/button'
+import Message from 'primevue/message'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -28,55 +32,33 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
-    <h1>Register</h1>
-    <form @submit.prevent="onSubmit">
-      <label>
-        Name
-        <input v-model="name" type="text" autocomplete="name" required minlength="2" />
+  <div class="mx-auto mt-24 max-w-sm">
+    <h1 class="mb-6 text-2xl font-semibold text-foreground">Register</h1>
+    <form class="flex flex-col gap-4" @submit.prevent="onSubmit">
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm text-muted-foreground">Name</span>
+        <InputText v-model="name" type="text" autocomplete="name" required minlength="2" fluid />
       </label>
-      <label>
-        Email
-        <input v-model="email" type="email" autocomplete="email" required />
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm text-muted-foreground">Email</span>
+        <InputText v-model="email" type="email" autocomplete="email" required fluid />
       </label>
-      <label>
-        Password
-        <input
+      <label class="flex flex-col gap-1.5">
+        <span class="text-sm text-muted-foreground">Password</span>
+        <Password
           v-model="password"
-          type="password"
           autocomplete="new-password"
           required
-          minlength="8"
+          :feedback="false"
+          toggle-mask
+          fluid
         />
       </label>
-      <p v-if="error" class="error">{{ error }}</p>
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Creating account...' : 'Register' }}
-      </button>
+      <Message v-if="error" severity="error" :closable="false">{{ error }}</Message>
+      <Button type="submit" :loading="loading" label="Register" />
     </form>
-    <p>Already have an account? <RouterLink to="/login">Login</RouterLink></p>
+    <p class="mt-4 text-sm text-muted-foreground">
+      Already have an account? <RouterLink class="text-primary underline" to="/login">Login</RouterLink>
+    </p>
   </div>
 </template>
-
-<style scoped>
-.auth-page {
-  max-width: 320px;
-  margin: 4rem auto;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.error {
-  color: crimson;
-}
-</style>
