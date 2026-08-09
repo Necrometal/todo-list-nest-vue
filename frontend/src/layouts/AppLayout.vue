@@ -2,12 +2,14 @@
 import { computed } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useDarkMode } from '@/composables/useDarkMode'
 import Button from 'primevue/button'
 import Breadcrumb from 'primevue/breadcrumb'
 
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+const { isDark, toggle: toggleDarkMode } = useDarkMode()
 
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: 'pi-gauge' },
@@ -69,6 +71,14 @@ async function onLogout() {
           <span class="hidden text-sm text-muted-foreground sm:inline">{{
             auth.user?.name
           }}</span>
+          <Button
+            severity="secondary"
+            size="small"
+            text
+            :icon="['pi', isDark ? 'pi-sun' : 'pi-moon'].join(' ')"
+            :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+            @click="toggleDarkMode"
+          />
           <Button severity="secondary" size="small" label="Logout" @click="onLogout" />
         </div>
       </header>
