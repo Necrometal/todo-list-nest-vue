@@ -22,9 +22,9 @@ export class TodosService {
     private readonly todoHistoryService: TodoHistoryService,
   ) {}
 
-  findAllForUser(ownerId: string): Promise<Todo[]> {
+  findAllForUser(ownerId: string, categoryId?: string): Promise<Todo[]> {
     return this.todosRepository.find({
-      where: { ownerId },
+      where: categoryId ? { ownerId, categoryId } : { ownerId },
       order: { createdAt: 'DESC' },
     });
   }

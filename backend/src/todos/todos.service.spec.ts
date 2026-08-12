@@ -17,6 +17,7 @@ describe('TodosService', () => {
     description: null,
     completed: false,
     ownerId,
+    categoryId: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -36,6 +37,19 @@ describe('TodosService', () => {
     } as unknown as jest.Mocked<TodoHistoryService>;
 
     todosService = new TodosService(todosRepository, todoHistoryService);
+  });
+
+  describe('findAllForUser', () => {
+    it('filters by categoryId when provided', async () => {
+      todosRepository.find.mockResolvedValue([todo]);
+
+      await todosService.findAllForUser(ownerId, 'category-1');
+
+      expect(todosRepository.find).toHaveBeenCalledWith({
+        where: { ownerId, categoryId: 'category-1' },
+        order: { createdAt: 'DESC' },
+      });
+    });
   });
 
   describe('findOneForUser', () => {

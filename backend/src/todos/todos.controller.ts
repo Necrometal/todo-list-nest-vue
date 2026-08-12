@@ -18,6 +18,7 @@ import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { TodoStatsQueryDto } from './dto/todo-stats-query.dto';
+import { TodoQueryDto } from './dto/todo-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('todos')
@@ -30,8 +31,11 @@ export class TodosController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: AuthenticatedUser) {
-    return this.todosService.findAllForUser(user.id);
+  findAll(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: TodoQueryDto,
+  ) {
+    return this.todosService.findAllForUser(user.id, query.categoryId);
   }
 
   @Get('stats')
