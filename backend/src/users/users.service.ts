@@ -19,6 +19,14 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
+  async getProfile(id: string): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
   findByEmailWithPassword(email: string): Promise<User | null> {
     return this.usersRepository
       .createQueryBuilder('user')
@@ -53,5 +61,12 @@ export class UsersService {
 
     Object.assign(user, dto);
     return this.usersRepository.save(user);
+  }
+
+  async remove(id: string): Promise<void> {
+    const result = await this.usersRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException('User not found');
+    }
   }
 }
