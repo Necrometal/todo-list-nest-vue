@@ -53,7 +53,8 @@ function main() {
   const commit = git(['rev-parse', '--short', args.head]);
   const date = new Date().toISOString().slice(0, 10);
 
-  const reportsDir = 'reports';
+  const repoRoot = git(['rev-parse', '--show-toplevel']);
+  const reportsDir = `${repoRoot}/reports`;
   if (!existsSync(reportsDir)) mkdirSync(reportsDir);
   const reportPath = `${reportsDir}/${date}-${args.trigger}-${context.feature}-${commit}.md`;
 
