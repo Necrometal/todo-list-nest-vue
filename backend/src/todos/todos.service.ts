@@ -13,6 +13,7 @@ import {
   StatsGroupBy,
 } from '../todo-history/todo-history.service';
 import { TodoAction } from '../todo-history/entities/todo-history.entity';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class TodosService {
@@ -20,6 +21,7 @@ export class TodosService {
     @InjectRepository(Todo)
     private readonly todosRepository: Repository<Todo>,
     private readonly todoHistoryService: TodoHistoryService,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   findAllForUser(ownerId: string, categoryId?: string): Promise<Todo[]> {
@@ -41,6 +43,10 @@ export class TodosService {
   }
 
   async create(ownerId: string, dto: CreateTodoDto): Promise<Todo> {
+    if (dto.categoryId) {
+      await this.categoriesService.findOneForUser(dto.categoryId, ownerId);
+    }
+
     const todo = this.todosRepository.create({ ...dto, ownerId });
     const saved = await this.todosRepository.save(todo);
     await this.todoHistoryService.record(
@@ -58,6 +64,10 @@ export class TodosService {
 
   async update(id: string, ownerId: string, dto: UpdateTodoDto): Promise<Todo> {
     const todo = await this.findOneForUser(id, ownerId);
+
+    if (dto.categoryId) {
+      await this.categoriesService.findOneForUser(dto.categoryId, ownerId);
+    }
 
     const patch = Object.fromEntries(
       Object.entries(dto).filter(([, value]) => value !== undefined),
