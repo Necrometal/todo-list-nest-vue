@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-10T00:00:00.000Z",
+  "title": "Design System: Todo List",
+  "extensions": {
+    "colorMeta": {
+      "signal-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "oklch(0.52 0.105 223.128)",
+        "tonalRamp": [
+          "oklch(0.15 0.105 223.128)",
+          "oklch(0.28 0.105 223.128)",
+          "oklch(0.38 0.105 223.128)",
+          "oklch(0.45 0.105 223.128)",
+          "oklch(0.52 0.105 223.128)",
+          "oklch(0.65 0.09 223.128)",
+          "oklch(0.8 0.06 223.128)",
+          "oklch(0.95 0.02 223.128)"
+        ]
+      },
+      "instrument-white": {
+        "role": "neutral",
+        "displayName": "Instrument White",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.148 0.004 228.8)",
+          "oklch(0.28 0.004 228.8)",
+          "oklch(0.4 0.004 228.8)",
+          "oklch(0.56 0.004 228.8)",
+          "oklch(0.7 0.004 228.8)",
+          "oklch(0.85 0.004 228.8)",
+          "oklch(0.95 0.004 228.8)",
+          "oklch(1 0 0)"
+        ]
+      },
+      "panel-ink": {
+        "role": "neutral",
+        "displayName": "Panel Ink",
+        "canonical": "oklch(0.148 0.004 228.8)"
+      },
+      "quiet-gray": {
+        "role": "neutral",
+        "displayName": "Quiet Gray",
+        "canonical": "oklch(0.967 0.001 286.375)"
+      },
+      "hairline-gray": {
+        "role": "neutral",
+        "displayName": "Hairline Gray",
+        "canonical": "oklch(0.925 0.005 214.3)"
+      },
+      "alert-red": {
+        "role": "destructive",
+        "displayName": "Alert Red",
+        "canonical": "oklch(0.577 0.245 27.325)",
+        "tonalRamp": [
+          "oklch(0.25 0.2 27.325)",
+          "oklch(0.35 0.22 27.325)",
+          "oklch(0.45 0.235 27.325)",
+          "oklch(0.52 0.24 27.325)",
+          "oklch(0.577 0.245 27.325)",
+          "oklch(0.65 0.22 27.325)",
+          "oklch(0.75 0.19 27.325)",
+          "oklch(0.88 0.1 27.325)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": { "displayName": "Headline", "purpose": "Page titles only (Login, Register, Todo Dashboard)." },
+      "body": { "displayName": "Body", "purpose": "Labels, help text, input values, button labels. Color varies by role; size/weight stay constant." }
+    },
+    "shadows": [],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one primary action per view.",
+      "html": "<button class=\"ds-btn-primary\">Login</button>",
+      "css": ".ds-btn-primary { background: var(--primary); color: var(--primary-foreground); border: 1px solid var(--primary); border-radius: calc(var(--radius) - 2px); padding: 6px 10px; font-size: 16px; font-weight: 400; cursor: pointer; transition: background 0.15s, border-color 0.15s; } .ds-btn-primary:hover { background: color-mix(in oklab, var(--primary), black 10%); border-color: color-mix(in oklab, var(--primary), black 10%); } .ds-btn-primary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Lower-priority action, e.g. Logout.",
+      "html": "<button class=\"ds-btn-secondary\">Logout</button>",
+      "css": ".ds-btn-secondary { background: var(--secondary); color: var(--secondary-foreground); border: 1px solid var(--secondary); border-radius: calc(var(--radius) - 2px); padding: 6px 10px; font-size: 16px; font-weight: 400; cursor: pointer; transition: background 0.15s; } .ds-btn-secondary:hover { background: color-mix(in oklab, var(--secondary), black 6%); } .ds-btn-secondary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-line text field, used for email/name/password.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"you@example.com\" />",
+      "css": ".ds-input { background: var(--background); color: var(--foreground); border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); padding: 6px 10px; font-size: 16px; width: 100%; } .ds-input::placeholder { color: var(--muted-foreground); } .ds-input:hover { border-color: var(--ring); } .ds-input:focus-visible { border-color: var(--ring); outline: none; } .ds-input[aria-invalid=\"true\"] { border-color: var(--destructive); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Instrument Panel",
+    "overview": "A cool, restrained blue-gray field with exactly one signal color. Nothing competes with signal-blue for attention — it marks the one primary action or active state per view, the way a control panel reserves color for the indicator that actually matters. Everything else lives in near-white surfaces, hairline gray borders, and ink-toned text. The register is clinical, not decorative: no gradients, no illustration, no warm tones. It reads as a precise working tool, not a lifestyle app. Components are crisp and no-nonsense — tight corners, hairline borders, minimal ornament — deliberately avoiding the soft-rounded, shadow-heavy default that most AI-generated UIs reach for.",
+    "keyCharacteristics": [
+      "One accent color (signal-blue), used sparingly and only for primary actions/active state",
+      "Flat body content; only chrome (header/sidebar, once built) is meant to read as floating",
+      "Hairline borders (hairline-gray) do the structural work that shadows would otherwise do",
+      "Single typeface (Inter) across the whole system — no display/body pairing",
+      "Full light/dark pair already defined; dark mode is a first-class invariant, not an afterthought"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "signal-blue marks exactly one thing per view: the primary action or the active state. If a screen has two elements fighting for that color, one of them is wrong.", "section": "colors" },
+      { "name": "The Flat Body Rule", "body": "Page content is flat at rest. Only structural chrome (header, sidebar) may float above it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reserve signal-blue for exactly one primary action or active state per screen (The One Signal Rule).",
+      "Do use hairline-gray borders as the default way to separate surfaces; reach for background contrast before reaching for a shadow.",
+      "Do keep the whole system on Inter — no second typeface without a real reason.",
+      "Do treat light and dark mode as equally first-class; every new color decision needs both a light and dark value."
+    ],
+    "donts": [
+      "Don't add drop shadows to page content/body surfaces — flat is the rule there.",
+      "Don't introduce a second accent hue; secondary/muted/accent stay neutral grays.",
+      "Don't round corners past xl (≈11.2px) or below xs — the system reads as crisp, not soft or sharp."
+    ]
+  }
+}
