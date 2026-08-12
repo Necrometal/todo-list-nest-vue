@@ -7,27 +7,21 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('todos')
-export class Todo {
+@Entity('categories')
+@Index(['ownerId', 'name'], { unique: true })
+export class Category {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  title: string;
+  name: string;
 
-  @Column({ type: 'text', nullable: true })
-  description: string | null;
-
-  @Column({ default: false })
-  completed: boolean;
+  @Column({ default: '#64748b' })
+  color: string;
 
   @Index()
   @Column()
   ownerId: string;
-
-  @Index()
-  @Column({ type: 'varchar', nullable: true })
-  categoryId: string | null;
 
   @CreateDateColumn()
   createdAt: Date;

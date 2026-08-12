@@ -14,6 +14,7 @@ const { isDark, toggle: toggleDarkMode } = useDarkMode()
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Dashboard', icon: 'pi-gauge' },
   { to: '/todos', label: 'Todos', icon: 'pi-list-check' },
+  { to: '/categories', label: 'Categories', icon: 'pi-tags' },
   { to: '/history', label: 'History', icon: 'pi-clock' },
 ]
 

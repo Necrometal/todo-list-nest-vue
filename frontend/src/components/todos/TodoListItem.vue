@@ -1,15 +1,23 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Checkbox from 'primevue/checkbox'
 import Button from 'primevue/button'
+import Tag from 'primevue/tag'
 import type { Todo } from '@/stores/todos'
 import { useTodosStore } from '@/stores/todos'
+import { useCategoriesStore } from '@/stores/categories'
 
 const props = defineProps<{ todo: Todo }>()
 const emit = defineEmits<{ edit: [todo: Todo] }>()
 
 const todosStore = useTodosStore()
+const categoriesStore = useCategoriesStore()
 const router = useRouter()
+
+const category = computed(() =>
+  categoriesStore.categories.find((c) => c.id === props.todo.categoryId),
+)
 
 async function onToggle() {
   await todosStore.toggleCompleted(props.todo)
@@ -48,6 +56,14 @@ function formatDate(iso: string) {
       </span>
       <span class="text-xs text-muted-foreground">{{ formatDate(todo.updatedAt) }}</span>
     </button>
+
+    <Tag
+      v-if="category"
+      :value="category.name"
+      :style="{ backgroundColor: category.color }"
+      class="shrink-0"
+      data-testid="todo-category-tag"
+    />
 
     <Button
       text

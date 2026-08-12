@@ -16,11 +16,13 @@ import TodoList from '@/components/todos/TodoList.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import type { Todo } from '@/stores/todos'
 import { useTodosStore } from '@/stores/todos'
+import { useCategoriesStore } from '@/stores/categories'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import { onMounted, ref } from 'vue'
 
 const todosStore = useTodosStore()
+const categoriesStore = useCategoriesStore()
 
 const modalVisible = ref(false)
 const editingTodo = ref<Todo | null>(null)
@@ -29,6 +31,7 @@ const formError = ref('')
 
 onMounted(() => {
   void todosStore.fetchTodos()
+  void categoriesStore.fetchCategories()
 })
 
 function openCreate() {
@@ -43,7 +46,11 @@ function openEdit(todo: Todo) {
   modalVisible.value = true
 }
 
-async function onSubmit(payload: { title: string; description: string }) {
+async function onSubmit(payload: {
+  title: string
+  description: string
+  categoryId: string | null
+}) {
   saving.value = true
   formError.value = ''
   try {
@@ -66,7 +73,7 @@ async function onSubmit(payload: { title: string; description: string }) {
     <div class="flex flex-col gap-4">
       <div class="flex items-center justify-between">
         <h1 class="text-2xl font-semibold text-foreground">Todos, see what you need to do</h1>
-        <Button icon="pi pi-plus" label="New Todo" @click="openCreate" />
+        <Button icon="pi pi-plus" label="New Todo" data-testid="new-todo-button" @click="openCreate" />
       </div>
 
       <Message v-if="todosStore.error" severity="error" :closable="false">{{
@@ -76,6 +83,7 @@ async function onSubmit(payload: { title: string; description: string }) {
       <TodoFilterBar
         v-model:search="todosStore.search"
         v-model:filter="todosStore.filter"
+        v-model:category-filter="todosStore.categoryFilter"
         :active-count="todosStore.activeCount"
       />
 

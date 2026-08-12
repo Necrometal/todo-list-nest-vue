@@ -4,9 +4,14 @@ import { Todo } from './entities/todo.entity';
 import { TodosService } from './todos.service';
 import { TodosController } from './todos.controller';
 import { TodoHistoryModule } from '../todo-history/todo-history.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Todo]), TodoHistoryModule],
+  imports: [
+    TypeOrmModule.forFeature([Todo]),
+    TodoHistoryModule,
+    CategoriesModule,
+  ],
   controllers: [TodosController],
   providers: [TodosService],
 })

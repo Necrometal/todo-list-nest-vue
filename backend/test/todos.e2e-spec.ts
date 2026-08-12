@@ -150,4 +150,46 @@ describe('Todos (e2e)', () => {
     expect(bucket).toMatchObject({ created: 4, completed: 1 });
     expect(typeof bucket.period).toBe('string');
   });
+
+  it('filters todos by categoryId', async () => {
+    const category = await request(app.getHttpServer())
+      .post('/categories')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ name: 'Filter target' });
+
+    const inCategory = await request(app.getHttpServer())
+      .post('/todos')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ title: 'Categorized', categoryId: category.body.id });
+
+    await request(app.getHttpServer())
+      .post('/todos')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({ title: 'Uncategorized' });
+
+    const response = await request(app.getHttpServer())
+      .get('/todos')
+      .query({ categoryId: category.body.id })
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .expect(200);
+
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].id).toBe(inCategory.body.id);
+  });
+
+  it('rejects assigning a category owned by another user', async () => {
+    const foreignCategory = await request(app.getHttpServer())
+      .post('/categories')
+      .set('Authorization', `Bearer ${otherToken}`)
+      .send({ name: "Other's category" });
+
+    await request(app.getHttpServer())
+      .post('/todos')
+      .set('Authorization', `Bearer ${ownerToken}`)
+      .send({
+        title: 'Should be rejected',
+        categoryId: foreignCategory.body.id,
+      })
+      .expect(403);
+  });
 });

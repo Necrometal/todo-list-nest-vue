@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TodosModule } from './todos/todos.module';
 import { TodoHistoryModule } from './todo-history/todo-history.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TodoHistoryModule } from './todo-history/todo-history.module';
     UsersModule,
     TodosModule,
     TodoHistoryModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

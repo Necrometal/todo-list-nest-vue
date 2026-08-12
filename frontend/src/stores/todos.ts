@@ -9,6 +9,7 @@ export interface Todo {
   description: string | null
   completed: boolean
   ownerId: string
+  categoryId: string | null
   createdAt: string
   updatedAt: string
 }
@@ -31,6 +32,7 @@ export const useTodosStore = defineStore('todos', () => {
   const todos = ref<Todo[]>([])
   const filter = ref<TodoFilter>('all')
   const search = ref('')
+  const categoryFilter = ref<string | null>(null)
   const loading = ref(false)
   const error = ref('')
 
@@ -45,6 +47,7 @@ export const useTodosStore = defineStore('todos', () => {
         return true
       })
       .filter((t) => (query ? t.title.toLowerCase().includes(query) : true))
+      .filter((t) => (categoryFilter.value ? t.categoryId === categoryFilter.value : true))
   })
 
   function authToken() {
@@ -63,7 +66,11 @@ export const useTodosStore = defineStore('todos', () => {
     }
   }
 
-  async function createTodo(payload: { title: string; description?: string }) {
+  async function createTodo(payload: {
+    title: string
+    description?: string
+    categoryId?: string | null
+  }) {
     const todo = await apiFetch<Todo>('/todos', {
       method: 'POST',
       body: payload,
@@ -82,7 +89,10 @@ export const useTodosStore = defineStore('todos', () => {
     if (index !== -1) todos.value[index] = updated
   }
 
-  async function updateTodo(id: string, patch: { title?: string; description?: string }) {
+  async function updateTodo(
+    id: string,
+    patch: { title?: string; description?: string; categoryId?: string | null },
+  ) {
     const updated = await apiFetch<Todo>(`/todos/${id}`, {
       method: 'PATCH',
       body: patch,
@@ -101,6 +111,7 @@ export const useTodosStore = defineStore('todos', () => {
     todos,
     filter,
     search,
+    categoryFilter,
     loading,
     error,
     activeCount,

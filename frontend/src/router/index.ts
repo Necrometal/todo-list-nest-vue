@@ -35,6 +35,12 @@ const router = createRouter({
       component: () => import('../views/HistoryView.vue'),
       meta: { requiresAuth: true, breadcrumb: 'History', icon: 'pi-clock' },
     },
+    {
+      path: '/categories',
+      name: 'categories',
+      component: () => import('../views/CategoriesView.vue'),
+      meta: { requiresAuth: true, breadcrumb: 'Categories', icon: 'pi-tags' },
+    },
   ],
 })
 
