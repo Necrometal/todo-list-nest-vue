@@ -10,15 +10,15 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the
 finish review, the verdict, and DESIGN.md.
 -->
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
 import TodoFilterBar from '@/components/todos/TodoFilterBar.vue'
-import TodoList from '@/components/todos/TodoList.vue'
 import TodoFormModal from '@/components/todos/TodoFormModal.vue'
+import TodoList from '@/components/todos/TodoList.vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import type { Todo } from '@/stores/todos'
+import { useTodosStore } from '@/stores/todos'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
-import { useTodosStore } from '@/stores/todos'
-import type { Todo } from '@/stores/todos'
+import { onMounted, ref } from 'vue'
 
 const todosStore = useTodosStore()
 
@@ -65,7 +65,7 @@ async function onSubmit(payload: { title: string; description: string }) {
   <AppLayout>
     <div class="flex flex-col gap-4">
       <div class="flex items-center justify-between">
-        <h1 class="text-2xl font-semibold text-foreground">Todos</h1>
+        <h1 class="text-2xl font-semibold text-foreground">Todos, see what you need to do</h1>
         <Button icon="pi pi-plus" label="New Todo" @click="openCreate" />
       </div>
 
