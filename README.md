@@ -28,12 +28,13 @@ claude
 /crew-all
 ```
 
-**Scriptable, from a shell** — same reviewer/test-qa/security agents plus the reporter, no interactive session needed (does not yet include the pentest agent):
+**Scriptable, from a shell** — same four agents plus the reporter, no interactive session needed:
 ```bash
 cd crew
 pnpm install
-pnpm crew:review -- --base master --head HEAD --trigger manual
+pnpm crew:review -- --base master --head HEAD --trigger manual --base-url http://localhost:3000
 ```
+`--base-url` (default `http://localhost:3000`) is only used by the pentest agent and must resolve to `localhost`/`127.0.0.1`/`::1` — the script refuses anything else before running.
 Exits non-zero if the resulting report's status is `fail` — usable as a local pre-push gate.
 
 ## The todo-list app itself
