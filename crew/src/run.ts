@@ -7,7 +7,10 @@ interface Args {
   head: string;
   trigger: 'manual' | 'pr' | 'merge';
   prNumber: string | null;
+  baseUrl: string;
 }
+
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1']);
 
 function parseArgs(argv: string[]): Args {
   const get = (flag: string, fallback: string | null) => {
@@ -20,6 +23,7 @@ function parseArgs(argv: string[]): Args {
     head: get('--head', 'HEAD')!,
     trigger,
     prNumber: get('--pr-number', null),
+    baseUrl: get('--base-url', 'http://localhost:3000')!,
   };
 }
 
@@ -42,6 +46,12 @@ function runAgent(agentName: string, prompt: string): string {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+
+  const baseUrlHost = new URL(args.baseUrl).hostname;
+  if (!LOCAL_HOSTS.has(baseUrlHost)) {
+    throw new Error(`--base-url must target localhost/127.0.0.1/::1, got "${args.baseUrl}" (host "${baseUrlHost}")`);
+  }
+
   const context = gatherContext(args.base, args.head);
 
   if (context.changedFiles.length === 0) {
@@ -67,10 +77,17 @@ function main() {
     '```',
   ].join('\n\n');
 
-  console.log(`Running reviewer, test-qa, security for feature "${context.feature}"...`);
+  console.log(`Running reviewer, test-qa, security, pentest for feature "${context.feature}"...`);
   const reviewerOutput = runAgent('crew-reviewer', sharedPreamble);
   const testQaOutput = runAgent('crew-test-qa', sharedPreamble);
   const securityOutput = runAgent('crew-security', sharedPreamble);
+
+  const pentestPreamble = [
+    `Base URL: ${args.baseUrl}`,
+    `Feature: ${context.feature}`,
+    `Feature files for context:\n${context.featureFiles.join('\n')}`,
+  ].join('\n\n');
+  const pentestOutput = runAgent('crew-pentest', pentestPreamble);
 
   console.log('Running reporter...');
   const reporterPrompt = [
@@ -84,6 +101,7 @@ function main() {
     reviewerOutput,
     testQaOutput,
     securityOutput,
+    pentestOutput,
   ].join('\n\n');
   runAgent('crew-reporter', reporterPrompt);
 

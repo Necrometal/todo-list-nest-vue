@@ -22,6 +22,7 @@ describe('UsersService', () => {
       create: jest.fn(),
       save: jest.fn(),
       createQueryBuilder: jest.fn(),
+      delete: jest.fn(),
     } as unknown as jest.Mocked<Repository<User>>;
 
     usersService = new UsersService(usersRepository);
@@ -76,6 +77,24 @@ describe('UsersService', () => {
     });
   });
 
+  describe('getProfile', () => {
+    it('returns the user when found', async () => {
+      usersRepository.findOneBy.mockResolvedValue(user);
+
+      const result = await usersService.getProfile(user.id);
+
+      expect(result).toEqual(user);
+    });
+
+    it('throws NotFoundException when the user does not exist', async () => {
+      usersRepository.findOneBy.mockResolvedValue(null);
+
+      await expect(usersService.getProfile('missing-id')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
   describe('updateProfile', () => {
     it('merges the dto into the existing user and saves it', async () => {
       usersRepository.findOneBy.mockResolvedValue(user);
@@ -96,6 +115,24 @@ describe('UsersService', () => {
       await expect(
         usersService.updateProfile('missing-id', { name: 'X' }),
       ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('remove', () => {
+    it('deletes the user by id', async () => {
+      usersRepository.delete.mockResolvedValue({ affected: 1, raw: {} });
+
+      await usersService.remove(user.id);
+
+      expect(usersRepository.delete).toHaveBeenCalledWith(user.id);
+    });
+
+    it('throws NotFoundException when the user does not exist', async () => {
+      usersRepository.delete.mockResolvedValue({ affected: 0, raw: {} });
+
+      await expect(usersService.remove('missing-id')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
