@@ -1,0 +1,13 @@
+---
+description: Run only the security agent on the current diff and write a solo crew report.
+argument-hint: [feature]
+---
+
+Run the security-only solo flow:
+
+1. Diff: `git diff $(git merge-base master HEAD)...HEAD`. If empty, tell the user there's nothing to review and stop.
+2. Feature: use "$ARGUMENTS" if non-empty, otherwise infer from the diff's changed paths (e.g. `backend/src/todos/**` or `frontend/src/**/todos/**` -> `todos`; changes spanning multiple unrelated feature dirs or core/shared files -> `shared`).
+3. Glob the affected feature's files for context.
+4. Invoke the `crew-security` subagent with: the diff, the feature name, the file list.
+5. Invoke the `crew-reporter` subagent with only the security section filled in — pass its raw output verbatim, and `reviewer_verdict: not-run`, `test_verdict: not-run`, `pentest_verdict: not-run`. Metadata: `trigger: manual`, `branch: $(git branch --show-current)`, `commit: $(git rev-parse --short HEAD)`, `pr_number: null`, `feature`, `date` (today, ISO), target path `reports/<date>-manual-<feature>-security-<short-sha>.md`.
+6. Report the final report file path back to the user.
