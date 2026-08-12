@@ -10,7 +10,6 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the
 finish review, the verdict, and DESIGN.md.
 -->
 <script setup lang="ts">
-import TestView from '@/components/TestView.vue'
 import TodoFilterBar from '@/components/todos/TodoFilterBar.vue'
 import TodoFormModal from '@/components/todos/TodoFormModal.vue'
 import TodoList from '@/components/todos/TodoList.vue'
@@ -66,7 +65,6 @@ async function onSubmit(payload: { title: string; description: string }) {
   <AppLayout>
     <div class="flex flex-col gap-4">
       <div class="flex items-center justify-between">
-        <TestView />
         <h1 class="text-2xl font-semibold text-foreground">Todos, see what you need to do</h1>
         <Button icon="pi pi-plus" label="New Todo" @click="openCreate" />
       </div>
